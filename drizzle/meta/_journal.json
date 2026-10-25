@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1792970360761,
+      "tag": "0000_new_maggott",
+      "breakpoints": true
+    }
+  ]
+}
