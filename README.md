@@ -5,7 +5,11 @@ It connects submissions, evidence-linked findings, proposed revisions, and human
 approval decisions so reviewers spend less time reconstructing context from Excel
 and email.
 
-[Open the demo](https://clearpath-review-fhshaik.zany-perch-1310.chatgpt.site)
+[Open the private demo](https://clearpath-review-fhshaik.zany-perch-1310.chatgpt.site)
+
+The deployed site and GitHub repository are private by owner request. Evaluators
+need access granted before opening the links. The app itself uses demo roles;
+the hosting access gate protects the private deployment.
 
 ## Try it in two minutes
 

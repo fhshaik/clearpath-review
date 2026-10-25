@@ -1,9 +1,21 @@
 import assert from "node:assert/strict";
+import { createInterface } from "node:readline";
+import { once } from "node:events";
 
 const base = new URL(process.argv[2] || "http://127.0.0.1:5173");
+let serviceToken;
+if (process.argv.includes("--private")) {
+  if (process.stdin.isTTY) process.stdin.setRawMode(true);
+  console.log("Private test credential input ready (stdin only).");
+  const reader = createInterface({ input: process.stdin, terminal: false });
+  const [line] = await once(reader, "line"); reader.close();
+  if (process.stdin.isTTY) process.stdin.setRawMode(false);
+  serviceToken = JSON.parse(line).token;
+  if (typeof serviceToken !== "string" || !serviceToken) throw new Error("Missing private test credential.");
+}
 const checks = [];
 const request = async (path, options = {}, cookie = "") => {
-  const response = await fetch(new URL(path, base), { ...options, headers: { ...(cookie ? { Cookie: cookie } : {}), ...options.headers } });
+  const response = await fetch(new URL(path, base), { redirect: "error", ...options, headers: { ...(serviceToken ? { "OAI-Sites-Authorization": `Bearer ${serviceToken}` } : {}), ...(cookie ? { Cookie: cookie } : {}), ...options.headers } });
   const text = await response.text(); let data; try { data = JSON.parse(text); } catch { data = { error: text }; } return { response, data };
 };
 const initial = await request("/api/workspace");
