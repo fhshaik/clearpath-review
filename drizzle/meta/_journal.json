@@ -8,6 +8,13 @@
       "when": 1792970360761,
       "tag": "0000_new_maggott",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1792974058554,
+      "tag": "0001_good_sue_storm",
+      "breakpoints": true
     }
   ]
 }

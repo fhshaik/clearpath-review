@@ -5,11 +5,11 @@ It connects submissions, evidence-linked findings, proposed revisions, and human
 approval decisions so reviewers spend less time reconstructing context from Excel
 and email.
 
-[Open the private demo](https://clearpath-review-fhshaik.zany-perch-1310.chatgpt.site)
+[Open the public demo](https://clearpath-review-fhshaik.zany-perch-1310.chatgpt.site)
 
-The deployed site and GitHub repository are private by owner request. Evaluators
-need access granted before opening the links. The app itself uses demo roles;
-the hosting access gate protects the private deployment.
+The demo opens without login. The GitHub source repository remains private by
+owner request; repository reviewers need a separate GitHub invitation. Each
+browser gets an isolated fictional workspace. Role switching is a demo feature.
 
 ## Try it in two minutes
 
@@ -20,26 +20,25 @@ the hosting access gate protects the private deployment.
 5. Switch the demo role to Compliance and record a version-specific approval.
 
 Initial analyses are **curated sample examples**, not live model results. New
-submissions get basic deterministic policy checks. To run real AI, use **Connect
-AI**, add your own Gemini API key, and click **Run live AI review** on a version
-awaiting review. Provider quotas, pricing, restrictions, and data-use terms apply.
-The app does not require a developer-owned AI key.
+submissions get basic deterministic policy checks. For real AI, click **Connect
+AI → Continue with OpenRouter**, authorize your own account, then return to a
+campaign and click **Run live AI review**. The review uses GPT-4.1 Mini through
+OpenRouter. Usage is charged to the visitor's OpenRouter credits and key allowance;
+there is no developer-funded AI key and no guarantee of free inference.
 
-The model picker defaults to Gemini 3.5 Flash-Lite, with Gemini 3.8 Flash as an
-alternative. These match Google's recommended choices for new projects; Gemini
-2.5 access is now restricted to existing users. Model availability and free-tier
-eligibility depend on the visitor's Google project.
-
-The key stays in page memory. It is passed through the server to Google's fixed
-endpoint only for a requested analysis, and is not stored in the database, browser
-storage, URLs, exports, or application logs. Reloading removes it. Use fictional
-creative in the demo.
+OpenRouter OAuth uses S256 PKCE and a random state bound to the demo session.
+Authorization codes are exchanged on the server. The resulting user credential
+is encrypted with AES-GCM under a hosting secret, bound to its workspace, and
+never returned to browser JavaScript, source code, URLs, exports, or application
+logs. Connection access expires after 24 hours. Disconnect deletes the stored
+connection; the user can revoke the provider key itself through Manage access.
+Expiry limits access; it does not promise immediate deletion of expired rows.
 
 ## What works
 
 - Searchable/filterable queue across personal loans, credit cards, and mortgage prequalification.
 - Structured intake with campaign, product, channel, affiliate, creative, and launch target.
-- Optional live Gemini analysis against a small, referenced internal checklist.
+- Optional live OpenRouter analysis against a small, referenced internal checklist.
 - Evidence highlights, explanatory findings, and proposed revisions requiring human action.
 - Confirm/dismiss finding dispositions; dismissals require a recorded reason.
 - Requests for changes, fresh reviews for new versions, comparison, and preserved prior decisions.
@@ -66,7 +65,7 @@ API but are not an independently immutable audit system.
 
 React 19, TypeScript, Radix dialogs, Lucide icons, and a Next-compatible App Router
 on Vinext. Server routes run on Cloudflare Workers; Drizzle manages the D1 schema.
-Sites provisions hosting and the database. Gemini is called through the REST API
+Sites provisions hosting and the database. OpenRouter is called through its REST API
 with structured output and server-side validation.
 
 Vinext is a beta framework. It is used here for the available Workers hosting path.
@@ -82,16 +81,21 @@ sample workflow.
 ```sh
 npm ci
 npm run build
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_new_maggott.sql
+node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 migrations apply DB --local --config dist/server/wrangler.json --persist-to .wrangler/state
 npm run dev
 ```
 
-Open the URL printed by the dev server (normally `http://127.0.0.1:5173`). The SQL
-command is the **first-time local database setup**; do not replay it after it has
-succeeded. Local data and hosted data are separate.
+Open the URL printed by the dev server (normally `http://127.0.0.1:5173`). The migration
+command applies pending local schema changes. Local data and hosted data are separate.
 
 A production-build preview is available with `npm start` after building. It shares
 the local D1 state. Nothing in these commands publishes a site or calls a model.
+
+Live local OAuth also requires an ignored local Worker secret named
+`AI_CONNECTION_SECRET` containing 32 cryptographically random bytes encoded as
+64 hex characters. Configure it in the local Wrangler environment. Configure the
+same key name as a secret in Sites for hosting; never commit a real value.
+Sample mode remains available without that secret.
 
 ## Verify
 
@@ -109,13 +113,15 @@ validation, numerical rewrite guards, provider errors, key handling, CSV safety,
 and exact-text comparison. HTTP smoke tests cover persistence, separate sessions,
 stale-write rejection, origin checks, request limits, and missing-key behavior.
 AI tests use a mock transport and **do not establish live model quality or a
-successful real-key provider connection**. Verify that separately with your key.
+successful real-user OAuth grant or model connection**. Verify those separately
+through the hosted Connect AI flow. HTTP checks also cover OAuth initiation,
+session/state isolation, failed exchange/replay handling, and disconnect.
 
 A separate local development smoke test on October 25, 2026 used Codex signed in
 with ChatGPT and the same review instructions on one fictional campaign. Its four
 findings and proposed revision passed the app's evidence, policy, and numerical
 validation. This is one example, not an accuracy evaluation, and does not verify
-the hosted Gemini transport. The deployed app does not use the developer's Codex
+the hosted OpenRouter transport. The deployed app does not use the developer's Codex
 session or subscription.
 
 ## Project map
@@ -127,6 +133,7 @@ session or subscription.
 | `app/api/analyze/route.ts` | Bounded AI review and optimistic save |
 | `lib/domain.ts` | Policies, fictional fixtures, state transitions, approval rules |
 | `lib/ai.ts` | Prompt, fixed provider request, and output validation |
+| `lib/oauth.ts`, `lib/connection.ts`, `app/api/auth/openrouter/` | PKCE, state, encrypted credentials, connection status and disconnect |
 | `lib/server.ts`, `db/`, `drizzle/` | Session isolation, persistence, concurrency, schema |
 | `tests/` | Domain, AI-transport, and running-server verification |
 | `docs/` | Architecture, tradeoffs, and presentation walkthrough |

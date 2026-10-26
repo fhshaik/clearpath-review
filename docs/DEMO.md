@@ -14,12 +14,12 @@ claim, rate-disclosure concern, and missing partner disclosure. Click a highligh
 to connect evidence with its finding and reference.
 
 State clearly: "The initial workspace contains curated sample analyses. Live AI
-is available when a visitor connects their own Gemini key."
+is available when a visitor connects their own OpenRouter account."
 
-If demonstrating live AI, connect a key through **Connect AI**, choose an available
-model, and click **Run live AI review** before recording finding dispositions.
-Google's quota and key restrictions apply. Do not claim the live integration has
-been verified unless this step succeeds with an actual key.
+If demonstrating live AI, connect your account through **Connect AI → Continue with OpenRouter**,
+authorize the app, and click **Run live AI review** before recording finding dispositions.
+OpenRouter credits and key allowances apply. Do not claim the live integration
+has been verified unless this step succeeds with a real visitor connection.
 
 ## 3. Close the review loop (90 seconds)
 
@@ -40,7 +40,8 @@ record. Reload to show that records are saved to the server, not only page state
 
 - The checklist is illustrative, not comprehensive regulatory certification.
 - AI cannot approve, publish, change copy automatically, or execute tools.
-- Keys are session-only. Copy goes to the visitor's AI provider when requested.
+- AI credentials are encrypted server-side and expire after 24 hours. Copy goes
+  to OpenRouter and its model provider only when a review is requested.
 - No-login roles are a demo convenience; production needs real identity and RBAC.
 - Anonymous sessions have separate workspaces. Sharing the URL does not share data.
 - Text review cannot assess disclosure placement in a real image or webpage.

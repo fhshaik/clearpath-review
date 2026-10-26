@@ -3,8 +3,9 @@
 ```text
 Browser (React / TypeScript)
   ├─ GET/POST /api/workspace ── D1 workspace state + append-only application events
-  └─ POST /api/analyze ─────── fixed Gemini endpoint ── validated review result
-         visitor key in request header only
+  └─ POST /api/analyze ─────── fixed OpenRouter endpoint ── validated review result
+         server decrypts the visitor credential for this request
+  └─ OpenRouter OAuth ─────── PKCE/state → encrypted connection in D1
 ```
 
 ## Why a workflow, rather than only a chat box
@@ -44,12 +45,26 @@ and scope optimistic locking to a campaign/version.
 
 ## AI boundary
 
-The visitor supplies a Gemini key. It remains in React page memory and is sent in
-a header to the same-origin analysis route. That route uses the key only in the
-`x-goog-api-key` header to a fixed Google endpoint. No arbitrary upstream URL,
-tools, retries, or provider credentials in URLs are supported. Application code
-does not log or persist keys. Hosting/provider infrastructure still processes
-requests; no broader claim about third-party retention is made.
+A visitor authorizes ClearPath on OpenRouter. A same-origin POST creates a
+10-minute S256 PKCE attempt with random state tied to the HTTP-only demo cookie.
+The callback atomically consumes matching, unexpired state for that workspace and
+origin before exchanging the code. Failed exchanges cannot be replayed. Codes are
+exchanged only at OpenRouter's fixed HTTPS endpoint without following redirects.
+
+The resulting credential is encrypted with AES-GCM under the hosting-only
+`AI_CONNECTION_SECRET`, with the workspace ID as authenticated associated data.
+Only the encrypted value is saved in D1. It is never returned to browser code,
+exports, URLs, or logs. Connection status returns only connected/expiry and a
+hashed-key management link. Access expires after 24 hours; expired rows may remain
+until replaced or disconnected. Disconnect removes the stored key and pending
+attempts. Provider revocation is a separate user action through OpenRouter.
+
+Analysis decrypts only the caller's credential and sends it in an Authorization
+header to a fixed OpenRouter endpoint. The model is server-allowlisted to
+`openai/gpt-4.1-mini`; structured-output support is required. A server-side claim
+permits at most one review start per minute per connected demo workspace, with no
+automatic retries. The visitor's credits fund inference. This is not a substitute
+for production abuse prevention, account identity, or billing controls.
 
 The system prompt contains the applicable curated policy checklist. Creative and
 campaign metadata are encoded as untrusted JSON data. The model returns structured
