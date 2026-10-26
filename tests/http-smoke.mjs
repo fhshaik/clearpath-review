@@ -51,7 +51,7 @@ assert.deepEqual(concurrent.map(r => r.response.status).sort(), [200, 409]);
 const afterRace = await request("/api/workspace", {}, cookie);
 assert.equal(afterRace.data.workspace.events.filter(e => e.campaignId === createdId && e.action === "Comment added").length, 1);
 checks.push("Concurrent stale writes cannot overwrite the successful update");
-const missingKey = await request("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json", Origin: base.origin }, body: JSON.stringify({ revision: afterRace.data.revision, campaignId: createdId, version: 1, model: "gemini-2.5-flash" }) }, cookie);
+const missingKey = await request("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json", Origin: base.origin }, body: JSON.stringify({ revision: afterRace.data.revision, campaignId: createdId, version: 1, model: "gemini-3.8-flash" }) }, cookie);
 assert.equal(missingKey.response.status, 401);
 const afterAI = await request("/api/workspace", {}, cookie);
 assert.equal(afterAI.data.revision, afterRace.data.revision);

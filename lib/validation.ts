@@ -14,4 +14,4 @@ export const actionSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("reset"), role }),
 ]);
 export const mutationSchema = z.object({ revision: z.number().int().nonnegative(), action: actionSchema });
-export const aiRequestSchema = z.object({ revision: z.number().int().nonnegative(), campaignId, role: role.default("reviewer"), version: z.number().int().positive(), model: z.enum(["gemini-2.5-flash", "gemini-2.5-flash-lite"]).default("gemini-2.5-flash") });
+export const aiRequestSchema = z.object({ revision: z.number().int().nonnegative(), campaignId, role: role.default("reviewer"), version: z.number().int().positive(), model: z.enum(["gemini-3.8-flash", "gemini-3.5-flash-lite"]).default("gemini-3.5-flash-lite") });

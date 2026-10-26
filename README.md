@@ -25,10 +25,15 @@ AI**, add your own Gemini API key, and click **Run live AI review** on a version
 awaiting review. Provider quotas, pricing, restrictions, and data-use terms apply.
 The app does not require a developer-owned AI key.
 
+The model picker defaults to Gemini 3.5 Flash-Lite, with Gemini 3.8 Flash as an
+alternative. These match Google's recommended choices for new projects; Gemini
+2.5 access is now restricted to existing users. Model availability and free-tier
+eligibility depend on the visitor's Google project.
+
 The key stays in page memory. It is passed through the server to Google's fixed
 endpoint only for a requested analysis, and is not stored in the database, browser
 storage, URLs, exports, or application logs. Reloading removes it. Use fictional
-creative in the public demo.
+creative in the demo.
 
 ## What works
 
@@ -105,6 +110,13 @@ and exact-text comparison. HTTP smoke tests cover persistence, separate sessions
 stale-write rejection, origin checks, request limits, and missing-key behavior.
 AI tests use a mock transport and **do not establish live model quality or a
 successful real-key provider connection**. Verify that separately with your key.
+
+A separate local development smoke test on October 25, 2026 used Codex signed in
+with ChatGPT and the same review instructions on one fictional campaign. Its four
+findings and proposed revision passed the app's evidence, policy, and numerical
+validation. This is one example, not an accuracy evaluation, and does not verify
+the hosted Gemini transport. The deployed app does not use the developer's Codex
+session or subscription.
 
 ## Project map
 
