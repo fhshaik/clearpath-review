@@ -1,99 +1,118 @@
-# Architecture and decisions
+# Architecture and boundaries
 
-```text
-Browser (React / TypeScript)
-  ├─ GET/POST /api/workspace ── Postgres workspace state + append-only application events
-  └─ POST /api/analyze ─────── fixed OpenRouter endpoint ── validated review result
-         server decrypts the visitor credential for this request
-  └─ OpenRouter OAuth ─────── PKCE/state → encrypted connection in Postgres
+## Request flow
+
+```mermaid
+flowchart TD
+    UI[React review workspace] --> W[GET/POST /api/workspace]
+    UI --> S[GET /api/ai/status]
+    UI --> A[POST /api/analyze]
+    W --> V[Origin, session, schema, revision checks]
+    V --> D[Pure domain transition]
+    D --> DB[(Neon Postgres)]
+    S --> Q[Sponsored counters]
+    A --> G[Current version and human-disposition gates]
+    G --> Q
+    Q --> H[Anthropic: included review]
+    G --> O[OpenRouter: visitor credential]
+    H --> R[Validate review output]
+    O --> R
+    R --> CAS[Conditional revision update]
+    CAS --> DB
+    DB --> UI
 ```
 
-## Why a workflow, rather than only a chat box
+Standard Next.js App Router runs on Vercel. Neon is accessed through its HTTP
+Postgres driver with parameterized queries. React renders model and campaign
+text as text, not injected HTML. Domain rules are independent of UI and storage.
 
-The outcome is reviewer throughput. A campaign needs creative, context, policy
-findings, actionable feedback, version history, and an explicit human decision.
-Keeping those connected removes context gathering and coordination work. The AI
-feature performs the bounded review task inside that workflow.
+## Records
 
-## Data and concurrency
+| Table/object | Purpose |
+| --- | --- |
+| workspaces | Workspace JSON, revision counter and update timestamp |
+| campaign → versions → analysis/decision | Exact creative, findings, proposed copy, model/usage, human decision |
+| workspace events | Actor, campaign/version, action, timestamp, explanation |
+| oauth_attempts | Hashed state, browser workspace, verifier, origin, return path, expiry |
+| ai_connections | Workspace-bound encrypted visitor key, management hash, expiry, review-rate claim |
+| sponsored_budget | Global lifetime attempt counter for `demo-v1` |
+| sponsored_sessions | Per-workspace attempt counter and last-start timestamp |
 
-Each browser gets a random UUID in an HTTP-only, SameSite=Lax cookie (Secure over
-HTTPS). The server uses that cookie to load only its demo workspace. The cookie is
-a bearer capability, not a production user identity. Do not use real private data.
+A JSON workspace is a deliberate prototype tradeoff. It is bounded to fifty
+campaigns but does not have production-grade event/version retention or
+normalization. The API preserves history; a database administrator or demo reset
+can change it. It is not an independently immutable audit ledger.
 
-A Postgres row holds one bounded demo workspace as JSON with a revision counter.
-Updates use `WHERE id = $3 AND revision = $4`; one of two stale concurrent writes
-fails with HTTP 409. The client refreshes instead of overwriting newer work.
-AI results use the same compare-and-swap check after inference, so a delayed result
-cannot silently replace review activity that happened during the request.
+## Session and write controls
 
-This intentionally trades database normalization and independent record updates
-for a small, auditable prototype. A production service should normalize campaigns,
-versions, findings, memberships, and events; add pagination, retention, and quotas;
-and scope optimistic locking to a campaign/version.
+A random UUID in an HTTP-only, SameSite=Lax cookie identifies one fictional
+workspace; HTTPS cookies are Secure. It is a bearer capability, not a real user
+identity or tenant membership. Role switching simulates colleagues.
+
+Mutating requests require the app's origin, JSON content and bounded input. The
+server streams at most 30,000 body bytes before parsing and rejects larger input.
+Creative has a 6,000-character limit. Schema validation restricts actions, roles,
+products, channels and AI provider/model identifiers.
+
+A normal write loads revision N, applies a pure transition to a clone, and executes
+an UPDATE whose WHERE clause requires the same workspace and revision N. It
+increments the revision and returns the new record. Zero affected rows means 409.
+AI performs the same final check after inference. A paid call may finish without
+saving when another tab changed the workspace; its allowance is not refunded.
 
 ## Human decision rules
 
-- Confirming an issue means it still needs correction; it does not clear approval.
-- Dismissal requires a written reason and creates an event.
-- Approval requires all findings to be dismissed or resolved by a new version,
-  plus a separate human review attestation.
-- A new version always starts `in_review` with fresh automated findings.
-- Prior creative and decisions cannot be edited through the application API.
-- The event record is append-only through application actions, not a cryptographic
-  or independently immutable audit system. Reset replaces disposable demo data.
+Approval requires every current finding to be dismissed or corrected through a
+new version, plus an explicit human attestation. Dismissals require reasons.
+Confirmed findings remain unresolved. A new version resets analysis/decision
+and retains previous creative and decisions. The API rejects replacing a decision
+on a decided version. AI cannot overwrite analysis after human dispositions.
 
-## AI boundary
+## AI providers and output contract
 
-A visitor authorizes ClearPath on OpenRouter. A same-origin POST creates a
-10-minute S256 PKCE attempt with random state tied to the HTTP-only demo cookie.
-The callback atomically consumes matching, unexpired state for that workspace and
-origin before exchanging the code. Failed exchanges cannot be replayed. Codes are
-exchanged only at OpenRouter's fixed HTTPS endpoint without following redirects.
+Both providers use the same applicable-policy prompt and validation function.
+Included AI calls Anthropic Messages with Claude Haiku 5.5; visitor-funded AI calls
+OpenRouter Chat Completions with GPT-4.1 Mini. Endpoints/models are fixed, credentials
+travel only in headers, redirects are rejected, and the timeout is 45 seconds.
+No tools or automatic retries are enabled. Provider error bodies are not returned
+to the browser or logged by application code.
 
-The resulting credential is encrypted with AES-GCM under the hosting-only
-`AI_CONNECTION_SECRET`, with the workspace ID as authenticated associated data.
-Only the encrypted value is saved in Postgres. It is never returned to browser code,
-exports, URLs, or logs. Connection status returns only connected/expiry and a
-hashed-key management link. Access expires after 24 hours; expired rows may remain
-until replaced or disconnected. Disconnect removes the stored key and pending
-attempts. Provider revocation is a separate user action through OpenRouter.
+The response contains summary, findings and optional proposed copy. Zod checks
+shape, lengths and count. Quotations must match the submitted creative exactly;
+policy IDs must apply to the product and channel. Human-only CP-06 is excluded
+from model findings. Basic deterministic concerns remain when not already covered.
+Drafts introducing unseen numerical values or unfinished placeholders are withheld.
+This does not validate numerical relationships, infer missing offer facts, prove
+legal correctness, or make the system immune to prompt injection.
 
-Analysis decrypts only the caller's credential and sends it in an Authorization
-header to a fixed OpenRouter endpoint. The model is server-allowlisted to
-`openai/gpt-4.1-mini`; structured-output support is required. A server-side claim
-permits at most one review start per minute per connected demo workspace, with no
-automatic retries. The visitor's credits fund inference. This is not a substitute
-for production abuse prevention, account identity, or billing controls.
+## Sponsored admission
 
-The system prompt contains the applicable curated policy checklist. Creative and
-campaign metadata are encoded as untrusted JSON data. The model returns structured
-findings and a proposed revision. Zod validates fields and lengths. The server
-rejects unknown/inapplicable policies and evidence that is not verbatim source
-text. A simple numeric guard withholds rewrites that introduce unseen numbers;
-this does not establish factual correctness or prevent all invented terms.
-Deterministic checks remain alongside AI findings unless the same concern is
-already represented. Model output is rendered as text, never injected as HTML.
+When explicitly enabled and a server key exists, each workspace can start two
+included attempts, at most one per minute. The global `demo-v1` row admits twenty
+attempts over its lifetime. A single SQL statement claims the session and global
+counters atomically, so concurrent function instances cannot exceed the caps.
+Each attempt reserves $0.05 conservatively, giving a $1 application admission
+allowance. Attempts, including provider failures, consume quota. Demo reset and
+routine schema migrations cannot replenish it. This is separate from provider
+account billing or usage of the same key by other applications.
 
-Prompt instructions and validation reduce specific failure paths; they do not
-make the model immune to prompt injection or establish legal correctness.
-No model output can directly approve or publish a campaign.
+## Visitor OAuth
 
-## Deliberate exclusions
+A same-origin start request creates ten-minute PKCE S256/state credentials bound
+to the browser cookie and current origin. The callback consumes matching state
+atomically before exchange or cancellation; consumed state cannot be replayed.
+Authorization codes are exchanged only server-side at OpenRouter's fixed HTTPS
+endpoint. The resulting key is encrypted with AES-GCM under AI_CONNECTION_SECRET,
+using the workspace ID as authenticated associated data. Access expires after
+24 hours. Only connection metadata is exposed. Disconnect deletes the stored
+credential and pending attempts; provider key revocation is a separate user action.
+Expired rows may remain until replacement or disconnect.
 
-Production authentication/RBAC, email delivery, affiliate crawling, PDF/OCR, image
-placement analysis, comprehensive legal coverage, multi-tenant administration,
-encryption of saved campaign fields, and measured throughput outcomes.
+## Production boundary
 
-## Hosting
-
-The runtime is standard Next.js App Router on Vercel, with a dedicated Neon
-Postgres database. The HTTP database driver works with stateless server functions.
-All queries are parameterized. Schema setup uses idempotent CREATE statements on
-build; it does not drop or rewrite existing tables. Secrets are server-only Vercel
-environment variables. A local `.env.local` is ignored by Git.
-
-Business rules, AI validation, and React components are independent of the database
-adapter. Workspace updates use conditional UPDATE ... RETURNING; OAuth callbacks
-consume attempts through DELETE ... RETURNING. Multi-statement initialization and
-disconnect actions use database transactions.
+Real identity/memberships, per-campaign authorization and locking, normalized
+storage, retention, independent audit controls, broader abuse prevention,
+redacted observability and maintained policy governance are future work. Text
+review cannot verify final placement, linked documents, real offers or audience.
+The product demonstrates a workflow and a bounded AI copilot; it does not certify
+financial marketing or prove an improvement in reviewer throughput.

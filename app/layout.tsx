@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "ClearPath Review — Keep good ideas moving",
-  description: "A fictional financial marketing review workspace with AI-assisted review and version-specific human decisions.",
+  description:
+    "A fictional financial marketing review workspace with AI-assisted review and version-specific human decisions.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

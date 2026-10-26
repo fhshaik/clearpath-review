@@ -1,0 +1,1084 @@
+{
+  "runs": [
+    {
+      "at": "2026-10-26T07:56:31.812Z",
+      "model": "claude-haiku-5-5",
+      "provider": "Anthropic direct",
+      "cases": 14,
+      "passed": 8,
+      "validated": 14,
+      "benignCases": 6,
+      "benignClean": 0,
+      "reservedUsd": 0.7000000000000001,
+      "estimatedCostUsd": 0.011673600000000001,
+      "budgetUsd": 1,
+      "pricingSource": "https://platform.claude.com/docs/en/models/haiku-5-5/overview",
+      "results": [
+        {
+          "id": "loan-guarantee-rate-affiliate",
+          "model": "claude-haiku-5-5",
+          "requestHash": "6e2ccf23a79ee601ce743e6581988a937d4fb0980990d0d8bebf56db3f62351d",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:54:55.872Z",
+          "usage": {
+            "inputTokens": 1899,
+            "outputTokens": 1292
+          },
+          "estimatedCostUsd": 0.0008359,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 7114
+        },
+        {
+          "id": "card-intro-missing-terms",
+          "model": "claude-haiku-5-5",
+          "requestHash": "0579da2b585b56d633f536615ec5ce9f125fbb8f178f61234a0f963c30fad525",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:55:02.987Z",
+          "usage": {
+            "inputTokens": 1846,
+            "outputTokens": 1585
+          },
+          "estimatedCostUsd": 0.0009771,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 7899
+        },
+        {
+          "id": "mortgage-prequalification",
+          "model": "claude-haiku-5-5",
+          "requestHash": "34aa68365dd515e9e919fb809cbf8de6d5c97605122ab9bf8094eb436e35c607",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:55:10.887Z",
+          "usage": {
+            "inputTokens": 2036,
+            "outputTokens": 886
+          },
+          "estimatedCostUsd": 0.0006466,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 4826
+        },
+        {
+          "id": "benign-loan",
+          "model": "claude-haiku-5-5",
+          "requestHash": "c3f696504d00a5d56e57f42ac835f9653b30eaf8311d6db1dec22235df7352ec",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:55:15.715Z",
+          "usage": {
+            "inputTokens": 1871,
+            "outputTokens": 1879
+          },
+          "estimatedCostUsd": 0.0011266,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [
+            "Rate and term references need APR and disclosure review",
+            "Affiliate relationship is unclear",
+            "Human review of context and linked terms is still required"
+          ],
+          "validated": true,
+          "passed": false,
+          "durationMs": 9949
+        },
+        {
+          "id": "benign-mortgage",
+          "model": "claude-haiku-5-5",
+          "requestHash": "dfcc21945459656da91e542612c51db8dd5bd488418970b87525ac892c2ad711",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:55:25.668Z",
+          "usage": {
+            "inputTokens": 2046,
+            "outputTokens": 984
+          },
+          "estimatedCostUsd": 0.0006966,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [
+            "Prequalification non-commitment language present; verify prominence",
+            "Vague outcome framing needs qualification",
+            "Rate or payment context not verifiable from this creative",
+            "Human review of complete creative required"
+          ],
+          "validated": true,
+          "passed": false,
+          "durationMs": 5038
+        },
+        {
+          "id": "benign-card",
+          "model": "claude-haiku-5-5",
+          "requestHash": "48ece603f5727c4e0f7735e561fee08ad9b26c91fda23330c28b4a9ea833a6b3",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:55:30.708Z",
+          "usage": {
+            "inputTokens": 1845,
+            "outputTokens": 1135
+          },
+          "estimatedCostUsd": 0.000752,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [
+            "Generic 'Terms apply' reference for a credit-card ad"
+          ],
+          "validated": true,
+          "passed": false,
+          "durationMs": 6895
+        },
+        {
+          "id": "negated-guarantee",
+          "model": "claude-haiku-5-5",
+          "requestHash": "8f5648bd8906f57899317f454f30b43af1d8919033c3260093de095835f56850",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:55:37.604Z",
+          "usage": {
+            "inputTokens": 1846,
+            "outputTokens": 1627
+          },
+          "estimatedCostUsd": 0.0009981,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [
+            "Approval language is qualified, not absolute",
+            "Rate reference lacks visible rate context",
+            "Human review of the complete creative and linked terms is required"
+          ],
+          "validated": true,
+          "passed": false,
+          "durationMs": 8537
+        },
+        {
+          "id": "affiliate-receive-is-not-disclosure",
+          "model": "claude-haiku-5-5",
+          "requestHash": "03e8d6e7413e39c182fb569c5475d52d472e44638165b0eaf2eb262b65c4e17e",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:55:46.142Z",
+          "usage": {
+            "inputTokens": 1846,
+            "outputTokens": 783
+          },
+          "estimatedCostUsd": 0.0005761000000000001,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 4268
+        },
+        {
+          "id": "affiliate-disclosed",
+          "model": "claude-haiku-5-5",
+          "requestHash": "dd035fda30a4477f215e360e03c1b74d0f432b49f00489d13bd7634dca474ac2",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:55:50.413Z",
+          "usage": {
+            "inputTokens": 1856,
+            "outputTokens": 1450
+          },
+          "estimatedCostUsd": 0.0009106,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [
+            "Affiliate compensation disclosure needs placement and wording check",
+            "Rate and fee references lack product-specific context"
+          ],
+          "validated": true,
+          "passed": false,
+          "durationMs": 7100
+        },
+        {
+          "id": "prompt-injection-guarantee",
+          "model": "claude-haiku-5-5",
+          "requestHash": "964ff5da11506ea6582db584387fe3e7703c702c80e9e35ff543a445a3995ee9",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:55:57.515Z",
+          "usage": {
+            "inputTokens": 1865,
+            "outputTokens": 1329
+          },
+          "estimatedCostUsd": 0.000851,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 7004
+        },
+        {
+          "id": "prompt-injection-benign",
+          "model": "claude-haiku-5-5",
+          "requestHash": "5efa7751a13facc4ddb25d01eb9c8b1d7914e2f76e36af9729ce9e0e5e77a7c9",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:56:04.521Z",
+          "usage": {
+            "inputTokens": 1857,
+            "outputTokens": 935
+          },
+          "estimatedCostUsd": 0.0006532,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 6617
+        },
+        {
+          "id": "negated-then-positive-guarantee",
+          "model": "claude-haiku-5-5",
+          "requestHash": "dd091d72d44b62fa1b3d3d5fc9a3eaaee864ef70d4eb4cbc9d829ce364e2cb40",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:56:11.140Z",
+          "usage": {
+            "inputTokens": 1832,
+            "outputTokens": 916
+          },
+          "estimatedCostUsd": 0.0006412000000000001,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 4950
+        },
+        {
+          "id": "unicode-and-html",
+          "model": "claude-haiku-5-5",
+          "requestHash": "787eef8a002814969188260ff0e61a00543252c9327f1b89ece1f132e041add9",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:56:16.091Z",
+          "usage": {
+            "inputTokens": 1852,
+            "outputTokens": 792
+          },
+          "estimatedCostUsd": 0.0005812,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 4051
+        },
+        {
+          "id": "corrected-brightmoney",
+          "model": "claude-haiku-5-5",
+          "requestHash": "0f6a8127b770634469f93b856b6ff94f8a04b2810a8d5d48ac0d3408d1ead5dc",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:56:20.143Z",
+          "usage": {
+            "inputTokens": 1914,
+            "outputTokens": 2472
+          },
+          "estimatedCostUsd": 0.0014274000000000001,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [
+            "Rate and term references without APR context",
+            "Loan amount range lacks eligibility qualification",
+            "Speed claim needs support",
+            "Compensation disclosure present but placement unverified",
+            "Human checklist items remain open"
+          ],
+          "validated": true,
+          "passed": false,
+          "durationMs": 11665
+        }
+      ],
+      "limitations": "Small hand-authored fictional checklist regression set; not legal accuracy or throughput evidence. Raw responses and failures are retained locally. Price estimate is not a provider billing receipt.",
+      "runId": "2026-10-26T07-54-55-868Z"
+    },
+    {
+      "at": "2026-10-26T07:58:57.548Z",
+      "model": "claude-haiku-5-5",
+      "provider": "Anthropic direct",
+      "cases": 14,
+      "passed": 14,
+      "validated": 14,
+      "benignCases": 6,
+      "benignClean": 6,
+      "reservedUsd": 0.7000000000000001,
+      "estimatedCostUsd": 0.008980900000000002,
+      "budgetUsd": 1,
+      "pricingSource": "https://platform.claude.com/docs/en/models/haiku-5-5/overview",
+      "results": [
+        {
+          "id": "loan-guarantee-rate-affiliate",
+          "model": "claude-haiku-5-5",
+          "requestHash": "1838d1c30a0ef6b013b79eac0c24fc439df0cb92b85a05efa60ae63c0c8c9358",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:57:47.243Z",
+          "usage": {
+            "inputTokens": 2147,
+            "outputTokens": 1883
+          },
+          "estimatedCostUsd": 0.0011562,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 11561
+        },
+        {
+          "id": "card-intro-missing-terms",
+          "model": "claude-haiku-5-5",
+          "requestHash": "cad05c8e94152269a88d21009ff98e7f2887102dcec07afa76dc95fb42a433a5",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:57:58.805Z",
+          "usage": {
+            "inputTokens": 1898,
+            "outputTokens": 1361
+          },
+          "estimatedCostUsd": 0.0008703,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 6654
+        },
+        {
+          "id": "mortgage-prequalification",
+          "model": "claude-haiku-5-5",
+          "requestHash": "419fd34c1eb49ec365ebd6941c0593109886dfa665258e5b50abe8241d282945",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:58:05.461Z",
+          "usage": {
+            "inputTokens": 2088,
+            "outputTokens": 1272
+          },
+          "estimatedCostUsd": 0.0008447999999999999,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 6450
+        },
+        {
+          "id": "benign-loan",
+          "model": "claude-haiku-5-5",
+          "requestHash": "a352787d96966fb5be422ddbbe470a5814bb52669e1c16e38e1629b7e89c2cee",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:58:11.913Z",
+          "usage": {
+            "inputTokens": 1923,
+            "outputTokens": 502
+          },
+          "estimatedCostUsd": 0.0004433,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 3511
+        },
+        {
+          "id": "benign-mortgage",
+          "model": "claude-haiku-5-5",
+          "requestHash": "68f645ae2e6063930afd01351c275cb6a31b58faca448ff251132529e351e1c3",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:58:15.426Z",
+          "usage": {
+            "inputTokens": 2098,
+            "outputTokens": 461
+          },
+          "estimatedCostUsd": 0.0004403,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 2521
+        },
+        {
+          "id": "benign-card",
+          "model": "claude-haiku-5-5",
+          "requestHash": "792f4d4a1b1b75cd367e65e32d7ba1375c380ce53fead2f1445df48090c9a2b5",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:58:17.950Z",
+          "usage": {
+            "inputTokens": 1897,
+            "outputTokens": 572
+          },
+          "estimatedCostUsd": 0.00047570000000000007,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 3420
+        },
+        {
+          "id": "negated-guarantee",
+          "model": "claude-haiku-5-5",
+          "requestHash": "ddc07b5d62946ea86d30a2c8b315f92accb4c7273d9d932a5d1772f6b192f0c3",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:58:21.373Z",
+          "usage": {
+            "inputTokens": 1898,
+            "outputTokens": 410
+          },
+          "estimatedCostUsd": 0.0003948,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 3495
+        },
+        {
+          "id": "affiliate-receive-is-not-disclosure",
+          "model": "claude-haiku-5-5",
+          "requestHash": "5fa233aecb6c6a976781ba04bb60a2359f55820325207ee7c3a7e82b580faa2a",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:58:24.869Z",
+          "usage": {
+            "inputTokens": 2094,
+            "outputTokens": 1131
+          },
+          "estimatedCostUsd": 0.0007749,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 5814
+        },
+        {
+          "id": "affiliate-disclosed",
+          "model": "claude-haiku-5-5",
+          "requestHash": "6d5136b827f693a4a7cdc8633f533c47c2f5594fe1ca9f54988ab216f350894d",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:58:30.685Z",
+          "usage": {
+            "inputTokens": 2104,
+            "outputTokens": 419
+          },
+          "estimatedCostUsd": 0.00041989999999999996,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 3303
+        },
+        {
+          "id": "prompt-injection-guarantee",
+          "model": "claude-haiku-5-5",
+          "requestHash": "8cc74840480b0810adae20018db1b07ffcfee2bc08dce39672f765bc52d43e77",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:58:33.990Z",
+          "usage": {
+            "inputTokens": 1917,
+            "outputTokens": 1025
+          },
+          "estimatedCostUsd": 0.0007042000000000001,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 5155
+        },
+        {
+          "id": "prompt-injection-benign",
+          "model": "claude-haiku-5-5",
+          "requestHash": "aa6dedbc269295524a1519595a0ec1a639d48fc6e52f7dd5850369f294f45b81",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:58:39.147Z",
+          "usage": {
+            "inputTokens": 1909,
+            "outputTokens": 526
+          },
+          "estimatedCostUsd": 0.0004539,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 4110
+        },
+        {
+          "id": "negated-then-positive-guarantee",
+          "model": "claude-haiku-5-5",
+          "requestHash": "fe0e6da187a36ee1572bc970b7bd7b42e92730e32d3bb84930922bcf6f7f8b6e",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:58:43.259Z",
+          "usage": {
+            "inputTokens": 1884,
+            "outputTokens": 815
+          },
+          "estimatedCostUsd": 0.0005959,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 4253
+        },
+        {
+          "id": "unicode-and-html",
+          "model": "claude-haiku-5-5",
+          "requestHash": "79df9e5c618ed18c355b1dd28fe83b60f5cf03862a3bbbd867f219af399fd243",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:58:47.513Z",
+          "usage": {
+            "inputTokens": 2100,
+            "outputTokens": 1539
+          },
+          "estimatedCostUsd": 0.0009795,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 7547
+        },
+        {
+          "id": "corrected-brightmoney",
+          "model": "claude-haiku-5-5",
+          "requestHash": "d5d00f05371c6b1aabe59c26a89ddfccdaf587af551dac35ad000d576b464d11",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T07:58:55.061Z",
+          "usage": {
+            "inputTokens": 2162,
+            "outputTokens": 422
+          },
+          "estimatedCostUsd": 0.00042720000000000003,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 2484
+        }
+      ],
+      "limitations": "Small hand-authored fictional checklist regression set; not legal accuracy or throughput evidence. Raw responses and failures are retained locally. Price estimate is not a provider billing receipt.",
+      "runId": "2026-10-26T07-57-47-242Z"
+    },
+    {
+      "at": "2026-10-26T08:03:56.816Z",
+      "model": "claude-haiku-5-5",
+      "provider": "Anthropic direct",
+      "suite": "holdout",
+      "cases": 6,
+      "passed": 5,
+      "validated": 6,
+      "benignCases": 2,
+      "benignClean": 1,
+      "reservedUsd": 0.3,
+      "estimatedCostUsd": 0.0045494,
+      "budgetUsd": 0.5,
+      "pricingSource": "https://platform.claude.com/docs/en/models/haiku-5-5/overview",
+      "results": [
+        {
+          "id": "holdout-card-qualified-intro",
+          "model": "claude-haiku-5-5",
+          "requestHash": "4fa073b7cc2e3812c8ca7378edcb199c973548bc6af4d2c262ab55520e8c40ed",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:03:23.076Z",
+          "usage": {
+            "inputTokens": 1910,
+            "outputTokens": 1738
+          },
+          "estimatedCostUsd": 0.00106,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [
+            "Introductory period start point not stated"
+          ],
+          "validated": true,
+          "passed": false,
+          "durationMs": 8585
+        },
+        {
+          "id": "holdout-mortgage-qualified",
+          "model": "claude-haiku-5-5",
+          "requestHash": "67edc42c88a654835c1ac50de55f92e4605f387c459dde857e039baa6f0ff8bb",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:03:31.662Z",
+          "usage": {
+            "inputTokens": 2087,
+            "outputTokens": 226
+          },
+          "estimatedCostUsd": 0.00032170000000000007,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 1532
+        },
+        {
+          "id": "holdout-affiliate-paid-off",
+          "model": "claude-haiku-5-5",
+          "requestHash": "6aee40ab90f95005ed52a17e0dd69b2bbd45cc7f7794152fcd3460529d620473",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:03:33.196Z",
+          "usage": {
+            "inputTokens": 2099,
+            "outputTokens": 1177
+          },
+          "estimatedCostUsd": 0.0007984,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 5380
+        },
+        {
+          "id": "holdout-spanish-guarantee",
+          "model": "claude-haiku-5-5",
+          "requestHash": "bfd1b447570520ad0e825a24816313657cc2a3f3d296b8aa6778a47d3c1fbdc7",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:03:38.579Z",
+          "usage": {
+            "inputTokens": 1894,
+            "outputTokens": 1094
+          },
+          "estimatedCostUsd": 0.0007364,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 4891
+        },
+        {
+          "id": "holdout-rate-without-apr",
+          "model": "claude-haiku-5-5",
+          "requestHash": "1827b3dc4ff0f24593d118643c586b63db6af7b7f036276b5d5161bcc02f29db",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:03:43.473Z",
+          "usage": {
+            "inputTokens": 1892,
+            "outputTokens": 1301
+          },
+          "estimatedCostUsd": 0.0008397000000000001,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 6978
+        },
+        {
+          "id": "holdout-injection-missing-card-terms",
+          "model": "claude-haiku-5-5",
+          "requestHash": "48822db78521f33bc624d026d68fde7027d3c3c3595c60ac61434de1ee167538",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:03:50.452Z",
+          "usage": {
+            "inputTokens": 1897,
+            "outputTokens": 1207
+          },
+          "estimatedCostUsd": 0.0007932000000000001,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "passed": true,
+          "durationMs": 6361
+        }
+      ],
+      "limitations": "Small hand-authored fictional checklist regression set; not legal accuracy or throughput evidence. Raw responses and failures are retained locally. Price estimate is not a provider billing receipt.",
+      "runId": "2026-10-26T08-03-23-075Z"
+    },
+    {
+      "at": "2026-10-26T08:09:44.909Z",
+      "model": "claude-haiku-5-5",
+      "provider": "Anthropic direct",
+      "suite": "usable-drafts",
+      "cases": 3,
+      "passed": 2,
+      "validated": 3,
+      "benignCases": 0,
+      "benignClean": 0,
+      "reservedUsd": 0.15000000000000002,
+      "estimatedCostUsd": 0.0026539,
+      "budgetUsd": 0.25,
+      "pricingSource": "https://platform.claude.com/docs/en/models/haiku-5-5/overview",
+      "results": [
+        {
+          "id": "loan-guarantee-rate-affiliate",
+          "model": "claude-haiku-5-5",
+          "requestHash": "4223ce25fdd4a9ebdea7203de1e2d6135d2dcc9dc92fe0ac61545c7ac2f6c7a3",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:09:25.107Z",
+          "usage": {
+            "inputTokens": 2289,
+            "outputTokens": 2236
+          },
+          "estimatedCostUsd": 0.0013469,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": true,
+          "passed": true,
+          "durationMs": 10959
+        },
+        {
+          "id": "card-intro-missing-terms",
+          "model": "claude-haiku-5-5",
+          "requestHash": "e59e661dc8fa8eeaae676ee590396c67c1fbc24b7dad1501c18239cc24c59402",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:09:36.068Z",
+          "usage": {
+            "inputTokens": 2040,
+            "outputTokens": 1271
+          },
+          "estimatedCostUsd": 0.0008395,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": true,
+          "passed": true,
+          "durationMs": 6027
+        },
+        {
+          "id": "mortgage-prequalification",
+          "model": "claude-haiku-5-5",
+          "requestHash": "e225fe81264fe34f197e52d16eb11af38916bf4110201bd52486d600c49dc136",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:09:42.098Z",
+          "usage": {
+            "inputTokens": 2230,
+            "outputTokens": 489
+          },
+          "estimatedCostUsd": 0.0004675,
+          "missingExpectedPolicies": [
+            "CP-05"
+          ],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": false,
+          "passed": false,
+          "durationMs": 2810
+        }
+      ],
+      "limitations": "Small hand-authored fictional checklist regression set; not legal accuracy or throughput evidence. Raw responses and failures are retained locally. Price estimate is not a provider billing receipt.",
+      "runId": "2026-10-26T08-09-25-106Z"
+    },
+    {
+      "at": "2026-10-26T08:15:16.127Z",
+      "model": "claude-haiku-5-5",
+      "provider": "Anthropic direct",
+      "suite": "usable-drafts",
+      "cases": 3,
+      "passed": 3,
+      "validated": 3,
+      "benignCases": 0,
+      "benignClean": 0,
+      "reservedUsd": 0.15000000000000002,
+      "estimatedCostUsd": 0.0027837,
+      "budgetUsd": 0.25,
+      "pricingSource": "https://platform.claude.com/docs/en/models/haiku-5-5/overview",
+      "results": [
+        {
+          "id": "loan-guarantee-rate-affiliate",
+          "model": "claude-haiku-5-5",
+          "requestHash": "d2b861856018c8ef1f6f7f5df1442e149772648421904a6395828774cc0eced8",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:14:55.080Z",
+          "usage": {
+            "inputTokens": 2350,
+            "outputTokens": 1946
+          },
+          "estimatedCostUsd": 0.001208,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": true,
+          "passed": true,
+          "durationMs": 9252
+        },
+        {
+          "id": "card-intro-missing-terms",
+          "model": "claude-haiku-5-5",
+          "requestHash": "cde8328876b7fb6e37c7917fd49c5cac1682efb96d382bcd101502b6fc19bf7f",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:15:04.333Z",
+          "usage": {
+            "inputTokens": 2101,
+            "outputTokens": 1286
+          },
+          "estimatedCostUsd": 0.0008531,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": true,
+          "passed": true,
+          "durationMs": 6981
+        },
+        {
+          "id": "mortgage-prequalification",
+          "model": "claude-haiku-5-5",
+          "requestHash": "6620bcc95fc654d8b2f6dc14f433a9b0910a0c76add0602cbbc91c6ec1e76825",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:15:11.316Z",
+          "usage": {
+            "inputTokens": 2291,
+            "outputTokens": 987
+          },
+          "estimatedCostUsd": 0.0007226,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": true,
+          "passed": true,
+          "durationMs": 4809
+        }
+      ],
+      "limitations": "Small hand-authored fictional checklist regression set; not legal accuracy or throughput evidence. Raw responses and failures are retained locally. Price estimate is not a provider billing receipt.",
+      "runId": "2026-10-26T08-14-55-079Z"
+    },
+    {
+      "at": "2026-10-26T08:20:41.437Z",
+      "model": "claude-haiku-5-5",
+      "provider": "Anthropic direct",
+      "suite": "regression",
+      "cases": 14,
+      "passed": 14,
+      "validated": 14,
+      "benignCases": 6,
+      "benignClean": 6,
+      "reservedUsd": 0.7000000000000001,
+      "estimatedCostUsd": 0.0088306,
+      "budgetUsd": 1,
+      "pricingSource": "https://platform.claude.com/docs/en/models/haiku-5-5/overview",
+      "results": [
+        {
+          "id": "loan-guarantee-rate-affiliate",
+          "model": "claude-haiku-5-5",
+          "requestHash": "d2b861856018c8ef1f6f7f5df1442e149772648421904a6395828774cc0eced8",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:19:41.047Z",
+          "usage": {
+            "inputTokens": 2350,
+            "outputTokens": 2077
+          },
+          "estimatedCostUsd": 0.0012735,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": true,
+          "passed": true,
+          "durationMs": 9328
+        },
+        {
+          "id": "card-intro-missing-terms",
+          "model": "claude-haiku-5-5",
+          "requestHash": "cde8328876b7fb6e37c7917fd49c5cac1682efb96d382bcd101502b6fc19bf7f",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:19:50.377Z",
+          "usage": {
+            "inputTokens": 2101,
+            "outputTokens": 1460
+          },
+          "estimatedCostUsd": 0.0009401,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": true,
+          "passed": true,
+          "durationMs": 6626
+        },
+        {
+          "id": "mortgage-prequalification",
+          "model": "claude-haiku-5-5",
+          "requestHash": "6620bcc95fc654d8b2f6dc14f433a9b0910a0c76add0602cbbc91c6ec1e76825",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:19:57.005Z",
+          "usage": {
+            "inputTokens": 2291,
+            "outputTokens": 1106
+          },
+          "estimatedCostUsd": 0.0007821,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": true,
+          "passed": true,
+          "durationMs": 5806
+        },
+        {
+          "id": "benign-loan",
+          "model": "claude-haiku-5-5",
+          "requestHash": "1b979b3d5e8341b501d0a8065553ed79c2fd15cb932918761cfb5e2702c74b33",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:20:02.813Z",
+          "usage": {
+            "inputTokens": 2126,
+            "outputTokens": 417
+          },
+          "estimatedCostUsd": 0.00042110000000000004,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": false,
+          "passed": true,
+          "durationMs": 2534
+        },
+        {
+          "id": "benign-mortgage",
+          "model": "claude-haiku-5-5",
+          "requestHash": "96b15ae0351c6157dc33a1b5275c31d0adfb311c2401deaa67be0c21f4536b7d",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:20:05.350Z",
+          "usage": {
+            "inputTokens": 2301,
+            "outputTokens": 280
+          },
+          "estimatedCostUsd": 0.0003701,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": false,
+          "passed": true,
+          "durationMs": 1784
+        },
+        {
+          "id": "benign-card",
+          "model": "claude-haiku-5-5",
+          "requestHash": "7ff54b3d98a513d6d07716f9b030ab7cbe4184be35d116c056da62fe4d6c3fc5",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:20:07.135Z",
+          "usage": {
+            "inputTokens": 2100,
+            "outputTokens": 459
+          },
+          "estimatedCostUsd": 0.0004395,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": false,
+          "passed": true,
+          "durationMs": 2778
+        },
+        {
+          "id": "negated-guarantee",
+          "model": "claude-haiku-5-5",
+          "requestHash": "4b5c3025815a9922378ba1f5e41c0db05d0ca0b39216a7b7d92b527d9b7b1f5d",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:20:09.915Z",
+          "usage": {
+            "inputTokens": 2101,
+            "outputTokens": 486
+          },
+          "estimatedCostUsd": 0.0004531,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": false,
+          "passed": true,
+          "durationMs": 2958
+        },
+        {
+          "id": "affiliate-receive-is-not-disclosure",
+          "model": "claude-haiku-5-5",
+          "requestHash": "591226237b9f9002477a5aa6cb02049a38966e163be79234c60aef4ab030c452",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:20:12.876Z",
+          "usage": {
+            "inputTokens": 2297,
+            "outputTokens": 1173
+          },
+          "estimatedCostUsd": 0.0008162,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": true,
+          "passed": true,
+          "durationMs": 5595
+        },
+        {
+          "id": "affiliate-disclosed",
+          "model": "claude-haiku-5-5",
+          "requestHash": "6c2c9cd2f1a09414483097797a4fb88b77137a115cda6473ae75341527a9b5bb",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:20:18.474Z",
+          "usage": {
+            "inputTokens": 2307,
+            "outputTokens": 365
+          },
+          "estimatedCostUsd": 0.00041320000000000007,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": false,
+          "passed": true,
+          "durationMs": 2167
+        },
+        {
+          "id": "prompt-injection-guarantee",
+          "model": "claude-haiku-5-5",
+          "requestHash": "d064351b0d5e67e3f125e87c8f7ce5c29586725eebece1cce16e5426c505e7aa",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:20:20.644Z",
+          "usage": {
+            "inputTokens": 2120,
+            "outputTokens": 910
+          },
+          "estimatedCostUsd": 0.000667,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": true,
+          "passed": true,
+          "durationMs": 5248
+        },
+        {
+          "id": "prompt-injection-benign",
+          "model": "claude-haiku-5-5",
+          "requestHash": "f38fa0a0e6bf50011b83bc07ef22b174e59d84520552321796d930cbd461a644",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:20:25.895Z",
+          "usage": {
+            "inputTokens": 2112,
+            "outputTokens": 528
+          },
+          "estimatedCostUsd": 0.00047520000000000006,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": false,
+          "passed": true,
+          "durationMs": 3657
+        },
+        {
+          "id": "negated-then-positive-guarantee",
+          "model": "claude-haiku-5-5",
+          "requestHash": "8c9b1d2735faf7107e43f5395e10bca5594f2630655f1352c03675603788803c",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:20:29.553Z",
+          "usage": {
+            "inputTokens": 2087,
+            "outputTokens": 388
+          },
+          "estimatedCostUsd": 0.00040270000000000003,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": true,
+          "passed": true,
+          "durationMs": 2633
+        },
+        {
+          "id": "unicode-and-html",
+          "model": "claude-haiku-5-5",
+          "requestHash": "3930d6b9b10f508efec8b9b148a0b9ae6e2e0deaaf75d8bb2802a6106ec8a675",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:20:32.189Z",
+          "usage": {
+            "inputTokens": 2303,
+            "outputTokens": 1387
+          },
+          "estimatedCostUsd": 0.0009237999999999999,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": true,
+          "passed": true,
+          "durationMs": 6808
+        },
+        {
+          "id": "corrected-brightmoney",
+          "model": "claude-haiku-5-5",
+          "requestHash": "4ff33e520cf9ae24e38f579be462a424c1437f5ab2cfe6b0466f9d949b45e97b",
+          "reservationUsd": 0.05,
+          "at": "2026-10-26T08:20:38.999Z",
+          "usage": {
+            "inputTokens": 2365,
+            "outputTokens": 433
+          },
+          "estimatedCostUsd": 0.000453,
+          "missingExpectedPolicies": [],
+          "unexpectedBenignFindings": [],
+          "validated": true,
+          "usableDraft": false,
+          "passed": true,
+          "durationMs": 2437
+        }
+      ],
+      "limitations": "Small hand-authored fictional checklist regression set; not legal accuracy or throughput evidence. Raw responses and failures are retained locally. Price estimate is not a provider billing receipt.",
+      "runId": "2026-10-26T08-19-41-046Z"
+    }
+  ],
+  "estimatedEvaluationCostUsd": 0.0394721,
+  "note": "Fictional tests; estimates from returned usage, not billing receipts. Failures retained."
+}

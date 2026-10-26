@@ -10,9 +10,12 @@ if (!process.env.DATABASE_URL) {
 }
 const sql = neon(process.env.DATABASE_URL);
 const source = await readFile(new URL("../db/schema.sql", import.meta.url), "utf8");
-const statements = source.split(";").map(s => s.trim()).filter(Boolean);
+const statements = source
+  .split(";")
+  .map((s) => s.trim())
+  .filter(Boolean);
 try {
-  await sql.transaction(statements.map(statement => sql.query(statement)));
+  await sql.transaction(statements.map((statement) => sql.query(statement)));
   console.log("Database schema is ready.");
 } catch {
   // Provider errors can contain connection details. Never print them.

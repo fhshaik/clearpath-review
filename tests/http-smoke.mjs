@@ -8,55 +8,146 @@ if (process.argv.includes("--private")) {
   if (process.stdin.isTTY) process.stdin.setRawMode(true);
   console.log("Private test credential input ready (stdin only).");
   const reader = createInterface({ input: process.stdin, terminal: false });
-  const [line] = await once(reader, "line"); reader.close();
+  const [line] = await once(reader, "line");
+  reader.close();
   if (process.stdin.isTTY) process.stdin.setRawMode(false);
   serviceToken = JSON.parse(line).token;
-  if (typeof serviceToken !== "string" || !serviceToken) throw new Error("Missing private test credential.");
+  if (typeof serviceToken !== "string" || !serviceToken)
+    throw new Error("Missing private test credential.");
 }
 const checks = [];
 const request = async (path, options = {}, cookie = "") => {
-  const response = await fetch(new URL(path, base), { redirect: "error", ...options, headers: { ...(serviceToken ? { "OAI-Sites-Authorization": `Bearer ${serviceToken}` } : {}), ...(cookie ? { Cookie: cookie } : {}), ...options.headers } });
-  const text = await response.text(); let data; try { data = JSON.parse(text); } catch { data = { error: text }; } return { response, data };
+  const response = await fetch(new URL(path, base), {
+    redirect: "error",
+    ...options,
+    headers: {
+      ...(serviceToken ? { "OAI-Sites-Authorization": `Bearer ${serviceToken}` } : {}),
+      ...(cookie ? { Cookie: cookie } : {}),
+      ...options.headers,
+    },
+  });
+  const text = await response.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = { error: text };
+  }
+  return { response, data };
 };
 const initial = await request("/api/workspace");
 assert.equal(initial.response.status, 200);
 assert.match(initial.response.headers.get("cache-control"), /no-store/);
 const setCookie = initial.response.headers.get("set-cookie");
-assert.match(setCookie, /HttpOnly/); assert.match(setCookie, /SameSite=Lax/);
+assert.match(setCookie, /HttpOnly/);
+assert.match(setCookie, /SameSite=Lax/);
 if (base.protocol === "https:") assert.match(setCookie, /Secure/);
 const cookie = setCookie.split(";")[0];
 assert.equal(initial.data.workspace.campaigns.length, 8);
 checks.push("Workspace loads with an isolated, HTTP-only session and no-store responses");
-const post = (body, origin = base.origin) => request("/api/workspace", { method: "POST", headers: { "Content-Type": "application/json", Origin: origin }, body: JSON.stringify(body) }, cookie);
+const post = (body, origin = base.origin) =>
+  request(
+    "/api/workspace",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Origin: origin },
+      body: JSON.stringify(body),
+    },
+    cookie,
+  );
 const original = initial.data.workspace.campaigns[0];
-const denied = await post({ revision: initial.data.revision, action: { type: "decision", role: "reviewer", campaignId: original.id, decision: "approved", note: "", attested: true } });
-assert.equal(denied.response.status, 400); assert.match(denied.data.error, /Resolve findings/);
+const denied = await post({
+  revision: initial.data.revision,
+  action: {
+    type: "decision",
+    role: "reviewer",
+    campaignId: original.id,
+    decision: "approved",
+    note: "",
+    attested: true,
+  },
+});
+assert.equal(denied.response.status, 400);
+assert.match(denied.data.error, /Resolve findings/);
 checks.push("Server rejects approval with unresolved findings");
-const crossOrigin = await post({ revision: initial.data.revision, action: { type: "comment", role: "reviewer", campaignId: original.id, note: "Should be rejected." } }, "https://unrelated.example");
+const crossOrigin = await post(
+  {
+    revision: initial.data.revision,
+    action: {
+      type: "comment",
+      role: "reviewer",
+      campaignId: original.id,
+      note: "Should be rejected.",
+    },
+  },
+  "https://unrelated.example",
+);
 assert.equal(crossOrigin.response.status, 403);
 checks.push("Cross-origin writes are rejected");
-const submitted = await post({ revision: initial.data.revision, action: { type: "submit", role: "marketer", name: "HTTP smoke campaign", product: "Personal loan", channel: "Website", partner: "ClearPath", dueAt: new Date(Date.now() + 86400000).toISOString(), copy: "Explore your ClearPath loan options. Review available terms before deciding. Approval is subject to eligibility and underwriting." } });
+const submitted = await post({
+  revision: initial.data.revision,
+  action: {
+    type: "submit",
+    role: "marketer",
+    name: "HTTP smoke campaign",
+    product: "Personal loan",
+    channel: "Website",
+    partner: "ClearPath",
+    dueAt: new Date(Date.now() + 86400000).toISOString(),
+    copy: "Explore your ClearPath loan options. Review available terms before deciding. Approval is subject to eligibility and underwriting.",
+  },
+});
 assert.equal(submitted.response.status, 200);
 const createdId = submitted.data.workspace.campaigns[0].id;
 const reloaded = await request("/api/workspace", {}, cookie);
 assert.equal(reloaded.data.workspace.campaigns[0].id, createdId);
 checks.push("New campaigns persist across reloads");
 const other = await request("/api/workspace");
-assert.ok(!other.data.workspace.campaigns.some(c => c.id === createdId));
+assert.ok(!other.data.workspace.campaigns.some((c) => c.id === createdId));
 assert.notEqual(other.response.headers.get("set-cookie").split(";")[0], cookie);
 checks.push("Another anonymous session cannot see the new campaign");
 const revision = reloaded.data.revision;
-const concurrent = await Promise.all(["First concurrent comment", "Second concurrent comment"].map(note => post({ revision, action: { type: "comment", role: "reviewer", campaignId: createdId, note } })));
-assert.deepEqual(concurrent.map(r => r.response.status).sort(), [200, 409]);
+const concurrent = await Promise.all(
+  ["First concurrent comment", "Second concurrent comment"].map((note) =>
+    post({ revision, action: { type: "comment", role: "reviewer", campaignId: createdId, note } }),
+  ),
+);
+assert.deepEqual(concurrent.map((r) => r.response.status).sort(), [200, 409]);
 const afterRace = await request("/api/workspace", {}, cookie);
-assert.equal(afterRace.data.workspace.events.filter(e => e.campaignId === createdId && e.action === "Comment added").length, 1);
+assert.equal(
+  afterRace.data.workspace.events.filter(
+    (e) => e.campaignId === createdId && e.action === "Comment added",
+  ).length,
+  1,
+);
 checks.push("Concurrent stale writes cannot overwrite the successful update");
-const missingKey = await request("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json", Origin: base.origin }, body: JSON.stringify({ revision: afterRace.data.revision, campaignId: createdId, version: 1, model: "openai/gpt-4.1-mini" }) }, cookie);
+const missingKey = await request(
+  "/api/analyze",
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Origin: base.origin },
+    body: JSON.stringify({
+      revision: afterRace.data.revision,
+      campaignId: createdId,
+      version: 1,
+      model: "openai/gpt-4.1-mini",
+    }),
+  },
+  cookie,
+);
 assert.equal(missingKey.response.status, 401);
 const afterAI = await request("/api/workspace", {}, cookie);
 assert.equal(afterAI.data.revision, afterRace.data.revision);
 checks.push("Missing AI credentials fail without mutating saved work");
-const oversized = await request("/api/workspace", { method: "POST", headers: { "Content-Type": "application/json", Origin: base.origin }, body: JSON.stringify({ tooLarge: "x".repeat(31000) }) }, cookie);
+const oversized = await request(
+  "/api/workspace",
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Origin: base.origin },
+    body: JSON.stringify({ tooLarge: "x".repeat(31000) }),
+  },
+  cookie,
+);
 assert.equal(oversized.response.status, 413);
 checks.push("Oversized requests are rejected");
 const connectionPath = "/api/auth/openrouter";
@@ -64,22 +155,46 @@ const disconnected = await request(connectionPath, {}, cookie);
 assert.deepEqual(disconnected.data, { connected: false });
 assert.match(disconnected.response.headers.get("cache-control"), /no-store/);
 checks.push("AI connection metadata is private and contains no credential");
-const start = (session = cookie, origin = base.origin) => request(`${connectionPath}/start`, { method: "POST", headers: { "Content-Type": "application/json", Origin: origin }, body: JSON.stringify({campaignId:original.id}) }, session);
+const start = (session = cookie, origin = base.origin) =>
+  request(
+    `${connectionPath}/start`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Origin: origin },
+      body: JSON.stringify({ campaignId: original.id }),
+    },
+    session,
+  );
 assert.equal((await start(cookie, "https://unrelated.example")).response.status, 403);
 assert.equal((await start("")).response.status, 401);
-const attempt = await start(); assert.equal(attempt.response.status, 200);
+const attempt = await start();
+assert.equal(attempt.response.status, 200);
 const authorization = new URL(attempt.data.url);
 assert.equal(authorization.origin, "https://openrouter.ai");
-assert.equal(authorization.searchParams.get("callback_url"), `${base.origin}/api/auth/openrouter/callback`);
+assert.equal(
+  authorization.searchParams.get("callback_url"),
+  `${base.origin}/api/auth/openrouter/callback`,
+);
 assert.equal(authorization.searchParams.get("code_challenge_method"), "S256");
 assert.equal(authorization.searchParams.get("code_challenge").length, 43);
 assert.ok(!authorization.searchParams.has("code_verifier"));
 checks.push("OAuth start requires the session and same origin, and exposes only an S256 challenge");
 const otherCookie = other.response.headers.get("set-cookie").split(";")[0];
-const callback = (state, session = cookie) => request(`${connectionPath}/callback?code=clearpath-invalid-smoke-code&state=${encodeURIComponent(state)}`, { redirect:"manual" }, session);
+const callback = (state, session = cookie) =>
+  request(
+    `${connectionPath}/callback?code=clearpath-invalid-smoke-code&state=${encodeURIComponent(state)}`,
+    { redirect: "manual" },
+    session,
+  );
 const state = authorization.searchParams.get("state");
-assert.equal((await callback(state, otherCookie)).response.headers.get("location"), "/?ai_connection=failed");
-assert.equal((await callback("x".repeat(43))).response.headers.get("location"), "/?ai_connection=failed");
+assert.equal(
+  (await callback(state, otherCookie)).response.headers.get("location"),
+  "/?ai_connection=failed",
+);
+assert.equal(
+  (await callback("x".repeat(43))).response.headers.get("location"),
+  "/?ai_connection=failed",
+);
 checks.push("OAuth callbacks reject another browser's session and unknown state");
 // The deliberately invalid code cannot authorize or charge any account. The
 // attempt must nevertheless be consumed, preventing replay of a failed exchange.
@@ -88,9 +203,51 @@ assert.equal(rejected.response.status, 303);
 assert.match(rejected.response.headers.get("location"), /ai_connection=failed/);
 assert.match(rejected.response.headers.get("referrer-policy"), /no-referrer/);
 assert.equal((await callback(state)).response.headers.get("location"), "/?ai_connection=failed");
-assert.deepEqual((await request(connectionPath, {}, cookie)).data, {connected:false});
-checks.push("A failed exchange cannot create a connection, and its consumed state cannot be replayed");
-assert.equal((await request(connectionPath, {method:"POST", headers:{"Content-Type":"application/json",Origin:"https://unrelated.example"},body:"{}"}, cookie)).response.status, 403);
-assert.equal((await request(connectionPath, {method:"POST", headers:{"Content-Type":"application/json",Origin:base.origin},body:"{}"}, cookie)).response.status, 200);
+assert.deepEqual((await request(connectionPath, {}, cookie)).data, { connected: false });
+checks.push(
+  "A failed exchange cannot create a connection, and its consumed state cannot be replayed",
+);
+assert.equal(
+  (
+    await request(
+      connectionPath,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Origin: "https://unrelated.example" },
+        body: "{}",
+      },
+      cookie,
+    )
+  ).response.status,
+  403,
+);
+assert.equal(
+  (
+    await request(
+      connectionPath,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Origin: base.origin },
+        body: "{}",
+      },
+      cookie,
+    )
+  ).response.status,
+  200,
+);
 checks.push("Disconnect is same-origin protected and removes this session's connection");
+const cancelledStart = await start();
+const cancelledState = new URL(cancelledStart.data.url).searchParams.get("state");
+const cancelled = await request(
+  `${connectionPath}/callback?error=access_denied&state=${encodeURIComponent(cancelledState)}`,
+  { redirect: "manual" },
+  cookie,
+);
+assert.equal(cancelled.response.status, 303);
+assert.match(cancelled.response.headers.get("location"), /ai_connection=cancelled/);
+assert.equal(
+  (await callback(cancelledState)).response.headers.get("location"),
+  "/?ai_connection=failed",
+);
+checks.push("OAuth cancellation consumes its session-bound state and cannot be replayed");
 console.log(JSON.stringify({ target: base.origin, passed: checks.length, checks }, null, 2));

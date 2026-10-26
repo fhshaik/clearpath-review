@@ -23,3 +23,14 @@ CREATE TABLE IF NOT EXISTS ai_connections (
   expires_at BIGINT NOT NULL,
   last_review_at BIGINT NOT NULL DEFAULT 0
 );
+
+CREATE TABLE IF NOT EXISTS sponsored_budget (
+  id TEXT PRIMARY KEY,
+  used INTEGER NOT NULL DEFAULT 0 CHECK (used >= 0)
+);
+INSERT INTO sponsored_budget (id, used) VALUES ('demo-v1', 0) ON CONFLICT (id) DO NOTHING;
+CREATE TABLE IF NOT EXISTS sponsored_sessions (
+  workspace_id TEXT PRIMARY KEY,
+  used INTEGER NOT NULL DEFAULT 0 CHECK (used >= 0),
+  last_started_at BIGINT NOT NULL DEFAULT 0
+);
