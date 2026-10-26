@@ -8,8 +8,25 @@ financial-marketing compliance or an accuracy claim on real campaigns.
 Public URL: https://clearpath-review.vercel.app  
 Source repository: https://github.com/fhshaik/clearpath-review
 
-The sponsored-AI release is locally tested; production deployment and hosted
-verification are in progress. This section will be updated with the release ID.
+Production deployment **dpl_EE4ok91qWo3cm33rcehHc154nsR8** is READY and
+serves the public alias. Application source commit:
+**716ed39390b9a56d1f26dba8961ba6e74cef2906**. The hosted suites below ran
+anonymously against the public alias with no authentication bypass.
+
+| Hosted check | Observed result |
+| --- | --- |
+| Anonymous HTTP smoke | 14 passed |
+| Full HTTP workflow, including real Anthropic generation | 8 passed |
+| Hosted provider receipt | 2375 input / 493 output tokens; estimated $0.000484 |
+| Public Chrome | Live review completed with four findings and AI draft; no console warnings/errors |
+| Downloaded queue CSV | Verified nine columns and eight campaign rows |
+| Empty queue search | Clear recovery action shown |
+
+Application CI passed: https://github.com/fhshaik/clearpath-review/actions/runs/40343772684
+
+The production configuration has sensitive server-only ANTHROPIC_API_KEY,
+DATABASE_URL and AI_CONNECTION_SECRET variables. Sponsored mode is enabled only
+in production. No provider key is required from the visitor.
 
 ## Application checks
 
@@ -25,6 +42,7 @@ verification are in progress. This section will be updated with the release ID.
 | Desktop browser workflow | Real AI → findings → request changes → Marketing edit → v2 comparison → Compliance attestation → approval → activity → reload passed |
 | Mobile | 390×844 and 320×740: document width equals viewport; 320px submission dialog fits and scrolls |
 | HTML-like creative | Submitted literal img/onerror text; rendered as plain text, zero image elements |
+| Downloaded JSON review record | Verified actual Chrome download: two versions, five events, approved state, original LIVE AI review and no credential |
 | Secret checks | Exact credential absent from source and browser static bundles; local environment ignored |
 
 Both server-side workflow and database persistence were exercised. The browser
@@ -52,7 +70,7 @@ mortgage CP-05 concern; the deterministic check retained that concern in the fin
 review. The prompt guidance was then clarified and that focused suite rerun.
 
 The six evaluator runs total approximately **$0.03947** from returned usage.
-Additional bounded end-to-end calls were made; a deliberately discarded response
+Additional bounded end-to-end calls were made, including the hosted receipt above; a deliberately discarded response
 in the concurrency test has no saved usage receipt. These are estimates rather
 than an exact account charge or remaining balance. Every evaluator call reserved
 $0.05 against its explicit run budget. No automatic retries were used.

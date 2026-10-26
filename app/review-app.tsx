@@ -279,6 +279,7 @@ function Activity({ events, onOpen }: { events: AuditEvent[]; onOpen?: (id: stri
 }
 
 export default function ReviewApp() {
+  const modalOpener = useRef<HTMLElement | null>(null);
   const [data, setData] = useState<Envelope | null>(null);
   const [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
@@ -443,6 +444,7 @@ export default function ReviewApp() {
     window.scrollTo({ top: 0 });
   }
   function openModal(next: Modal) {
+    modalOpener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     setFormError("");
     setNote("");
     setAttested(false);
@@ -1757,6 +1759,12 @@ export default function ReviewApp() {
         <Dialog.Portal>
           <Dialog.Overlay className="modal-overlay" />
           <Dialog.Content
+            onCloseAutoFocus={(event) => {
+              if (modalOpener.current?.isConnected) {
+                event.preventDefault();
+                modalOpener.current.focus();
+              }
+            }}
             className={`modal-content ${modal === "submit" || modal === "revise" ? "wide" : ""}`}
             onEscapeKeyDown={(e) => {
               if (locked) e.preventDefault();
