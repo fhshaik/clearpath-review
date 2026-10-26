@@ -2,10 +2,10 @@
 
 ```text
 Browser (React / TypeScript)
-  ├─ GET/POST /api/workspace ── D1 workspace state + append-only application events
+  ├─ GET/POST /api/workspace ── Postgres workspace state + append-only application events
   └─ POST /api/analyze ─────── fixed OpenRouter endpoint ── validated review result
          server decrypts the visitor credential for this request
-  └─ OpenRouter OAuth ─────── PKCE/state → encrypted connection in D1
+  └─ OpenRouter OAuth ─────── PKCE/state → encrypted connection in Postgres
 ```
 
 ## Why a workflow, rather than only a chat box
@@ -21,8 +21,8 @@ Each browser gets a random UUID in an HTTP-only, SameSite=Lax cookie (Secure ove
 HTTPS). The server uses that cookie to load only its demo workspace. The cookie is
 a bearer capability, not a production user identity. Do not use real private data.
 
-A D1 row holds one bounded demo workspace as JSON with a revision counter.
-Updates use `WHERE id = ? AND revision = ?`; one of two stale concurrent writes
+A Postgres row holds one bounded demo workspace as JSON with a revision counter.
+Updates use `WHERE id = $3 AND revision = $4`; one of two stale concurrent writes
 fails with HTTP 409. The client refreshes instead of overwriting newer work.
 AI results use the same compare-and-swap check after inference, so a delayed result
 cannot silently replace review activity that happened during the request.
@@ -53,7 +53,7 @@ exchanged only at OpenRouter's fixed HTTPS endpoint without following redirects.
 
 The resulting credential is encrypted with AES-GCM under the hosting-only
 `AI_CONNECTION_SECRET`, with the workspace ID as authenticated associated data.
-Only the encrypted value is saved in D1. It is never returned to browser code,
+Only the encrypted value is saved in Postgres. It is never returned to browser code,
 exports, URLs, or logs. Connection status returns only connected/expiry and a
 hashed-key management link. Access expires after 24 hours; expired rows may remain
 until replaced or disconnected. Disconnect removes the stored key and pending
@@ -85,9 +85,15 @@ Production authentication/RBAC, email delivery, affiliate crawling, PDF/OCR, ima
 placement analysis, comprehensive legal coverage, multi-tenant administration,
 encryption of saved campaign fields, and measured throughput outcomes.
 
-## Hosting portability
+## Hosting
 
-The current runtime is Vinext (Next-compatible App Router) on Cloudflare Workers,
-with D1 provisioned by Sites. It is not a drop-in Vercel deployment: moving to
-Vercel would require standard Next.js scripts and a replacement database adapter.
-Business rules, AI validation, and React components are independent of D1.
+The runtime is standard Next.js App Router on Vercel, with a dedicated Neon
+Postgres database. The HTTP database driver works with stateless server functions.
+All queries are parameterized. Schema setup uses idempotent CREATE statements on
+build; it does not drop or rewrite existing tables. Secrets are server-only Vercel
+environment variables. A local `.env.local` is ignored by Git.
+
+Business rules, AI validation, and React components are independent of the database
+adapter. Workspace updates use conditional UPDATE ... RETURNING; OAuth callbacks
+consume attempts through DELETE ... RETURNING. Multi-statement initialization and
+disconnect actions use database transactions.

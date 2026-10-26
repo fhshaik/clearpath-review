@@ -1,11 +1,7 @@
-import { env } from "cloudflare:workers";
+import { query } from "../db/client";
 import { DomainError, seedWorkspace, type Envelope, type Workspace } from "./domain";
 
 const COOKIE = "clearpath_demo";
-export function database() {
-  if (!env.DB) throw new DomainError("The workspace database is not connected. Please try again shortly.", 503);
-  return env.DB;
-}
 export function workspaceId(request: Request): string | null {
   const value = request.headers.get("cookie")?.split(";").map(c => c.trim()).find(c => c.startsWith(`${COOKIE}=`))?.slice(COOKIE.length + 1);
   return value && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value) ? value : null;
@@ -26,7 +22,7 @@ export async function readBody(request: Request) {
   try { return JSON.parse(text); } catch { throw new DomainError("The request could not be read. Please try again."); }
 }
 export async function loadWorkspace(id: string): Promise<Envelope> {
-  const row = await database().prepare("SELECT data, revision FROM workspaces WHERE id = ?").bind(id).first<{ data: string; revision: number }>();
+  const row = (await query<{data:string; revision:number}>("SELECT data, revision FROM workspaces WHERE id = $1", [id]))[0];
   if (!row) throw new DomainError("Your demo session has expired. Reload to start a new workspace.", 401);
   return { workspace: JSON.parse(row.data) as Workspace, revision: row.revision };
 }
@@ -38,12 +34,12 @@ export async function ensureWorkspace(request: Request): Promise<{ id: string; e
   }
   const id = crypto.randomUUID();
   const workspace = seedWorkspace();
-  await database().prepare("INSERT INTO workspaces (id, revision, data, updated_at) VALUES (?, 0, ?, ?)").bind(id, JSON.stringify(workspace), new Date().toISOString()).run();
+  await query("INSERT INTO workspaces (id, revision, data, updated_at) VALUES ($1, 0, $2, $3)", [id, JSON.stringify(workspace), new Date().toISOString()]);
   return { id, envelope: { workspace, revision: 0 }, created: true };
 }
 export async function saveWorkspace(id: string, revision: number, workspace: Workspace): Promise<Envelope> {
-  const result = await database().prepare("UPDATE workspaces SET data = ?, revision = revision + 1, updated_at = ? WHERE id = ? AND revision = ?").bind(JSON.stringify(workspace), new Date().toISOString(), id, revision).run();
-  if (!result.meta.changes) throw new DomainError("This workspace changed in another tab. Your latest data has been refreshed; please review it before trying again.", 409);
+  const result = await query("UPDATE workspaces SET data = $1, revision = revision + 1, updated_at = $2 WHERE id = $3 AND revision = $4 RETURNING revision", [JSON.stringify(workspace), new Date().toISOString(), id, revision]);
+  if (!result.length) throw new DomainError("This workspace changed in another tab. Your latest data has been refreshed; please review it before trying again.", 409);
   return { workspace, revision: revision + 1 };
 }
 export function apiError(error: unknown) {

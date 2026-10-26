@@ -5,7 +5,7 @@ It connects submissions, evidence-linked findings, proposed revisions, and human
 approval decisions so reviewers spend less time reconstructing context from Excel
 and email.
 
-[Open the public demo](https://clearpath-review-fhshaik.zany-perch-1310.chatgpt.site)
+[Open the public demo](https://clearpath-review.vercel.app)
 
 The demo opens without login. The GitHub source repository remains private by
 owner request; repository reviewers need a separate GitHub invitation. Each
@@ -63,39 +63,42 @@ API but are not an independently immutable audit system.
 
 ## Stack
 
-React 19, TypeScript, Radix dialogs, Lucide icons, and a Next-compatible App Router
-on Vinext. Server routes run on Cloudflare Workers; Drizzle manages the D1 schema.
-Sites provisions hosting and the database. OpenRouter is called through its REST API
-with structured output and server-side validation.
-
-Vinext is a beta framework. It is used here for the available Workers hosting path.
-The application is not a drop-in Vercel deployment; moving would require standard
-Next.js scripts and replacing the D1 adapter. Domain rules and AI validation are
-independent of that adapter.
+Next.js 16 App Router, React 19, TypeScript, Radix dialogs, and Lucide icons.
+Vercel hosts the app and server routes. Neon Postgres persists isolated demo
+workspaces, OAuth attempts, and encrypted AI connections through parameterized
+queries. OpenRouter supplies optional AI through its REST API with structured
+output and server-side validation.
 
 ## Run locally
 
-Requires Node.js 22.13 or later, npm, and Git. No AI key is needed to run the
-sample workflow.
+Requires Node.js 22.13 or later, npm, Git, and a Neon Postgres database. No AI
+account is needed to run the sample workflow.
 
 ```sh
 npm ci
-npm run build
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 migrations apply DB --local --config dist/server/wrangler.json --persist-to .wrangler/state
+cp .env.example .env.local
+# Fill DATABASE_URL with your Neon connection string.
+# Fill AI_CONNECTION_SECRET with a random 64-character hex secret for OAuth.
+npm run db:migrate
 npm run dev
 ```
 
-Open the URL printed by the dev server (normally `http://127.0.0.1:5173`). The migration
-command applies pending local schema changes. Local data and hosted data are separate.
+Open `http://localhost:5173`. Use a separate development database to keep local
+and hosted data separate. The migration creates missing tables and indexes.
+A production preview is available with `npm run build` followed by `npm start`.
+These commands do not publish the app or call a model.
 
-A production-build preview is available with `npm start` after building. It shares
-the local D1 state. Nothing in these commands publishes a site or calls a model.
+## Deploy on Vercel
 
-Live local OAuth also requires an ignored local Worker secret named
-`AI_CONNECTION_SECRET` containing 32 cryptographically random bytes encoded as
-64 hex characters. Configure it in the local Wrangler environment. Configure the
-same key name as a secret in Sites for hosting; never commit a real value.
-Sample mode remains available without that secret.
+1. Create a Vercel Next.js project and a Neon Postgres database.
+2. Configure `DATABASE_URL` and `AI_CONNECTION_SECRET` as server-only environment
+   variables in Vercel. Never prefix them with `NEXT_PUBLIC_` or commit real values.
+3. Deploy this repository. The build applies the idempotent database schema before
+   compiling the app. OAuth callbacks derive their origin from the deployed URL.
+
+The sample workflow does not need an AI provider key. The public demo uses Vercel
+Hobby and a small Neon database; service quotas still apply. Visitors who connect
+OpenRouter fund their own model usage. The repository remains private.
 
 ## Verify
 
@@ -104,7 +107,7 @@ npm run typecheck
 npm test
 npm run build
 # With the app running:
-node tests/http-smoke.mjs http://127.0.0.1:5173
+node tests/http-smoke.mjs http://localhost:5173
 ```
 
 Unit tests cover approval gates, reasoned dismissals, preserved decisions across
@@ -134,12 +137,10 @@ session or subscription.
 | `lib/domain.ts` | Policies, fictional fixtures, state transitions, approval rules |
 | `lib/ai.ts` | Prompt, fixed provider request, and output validation |
 | `lib/oauth.ts`, `lib/connection.ts`, `app/api/auth/openrouter/` | PKCE, state, encrypted credentials, connection status and disconnect |
-| `lib/server.ts`, `db/`, `drizzle/` | Session isolation, persistence, concurrency, schema |
+| `lib/server.ts`, `db/`, `scripts/migrate.mjs` | Session isolation, persistence, concurrency, schema |
 | `tests/` | Domain, AI-transport, and running-server verification |
 | `docs/` | Architecture, tradeoffs, and presentation walkthrough |
 
-The remaining `scripts/`, `worker/`, and connector helpers are the hosting starter's
-runtime/build infrastructure. No external app connectors are used by this product.
 
 ## Next production steps
 

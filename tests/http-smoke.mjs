@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createInterface } from "node:readline";
 import { once } from "node:events";
 
-const base = new URL(process.argv[2] || "http://127.0.0.1:5173");
+const base = new URL(process.argv[2] || "http://localhost:5173");
 let serviceToken;
 if (process.argv.includes("--private")) {
   if (process.stdin.isTTY) process.stdin.setRawMode(true);

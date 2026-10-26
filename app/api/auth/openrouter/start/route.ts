@@ -1,4 +1,5 @@
-import { apiError, checkOrigin, database, json, loadWorkspace, readBody, workspaceId } from "@/lib/server";
+import { apiError, checkOrigin, json, loadWorkspace, readBody, workspaceId } from "@/lib/server";
+import { transaction } from "@/db/client";
 import { authorizationUrl, hash, randomToken } from "@/lib/oauth";
 import { connectionSecret } from "@/lib/connection";
 import { DomainError } from "@/lib/domain";
@@ -14,9 +15,9 @@ export async function POST(request: Request) {
     const campaign = typeof body.campaignId === "string" && /^[a-zA-Z0-9-]{1,80}$/.test(body.campaignId) ? body.campaignId : "";
     const returnPath = campaign ? `/?campaign=${encodeURIComponent(campaign)}` : "/";
     const state = randomToken(), verifier = randomToken(), origin = new URL(request.url).origin;
-    await database().batch([
-      database().prepare("DELETE FROM oauth_attempts WHERE expires_at < ? OR workspace_id = ?").bind(Date.now(), id),
-      database().prepare("INSERT INTO oauth_attempts (state_hash, workspace_id, verifier, origin, return_path, expires_at) VALUES (?, ?, ?, ?, ?, ?)").bind(await hash(state), id, verifier, origin, returnPath, Date.now() + 600000),
+    await transaction([
+      {text:"DELETE FROM oauth_attempts WHERE expires_at < $1 OR workspace_id = $2", values:[Date.now(), id]},
+      {text:"INSERT INTO oauth_attempts (state_hash, workspace_id, verifier, origin, return_path, expires_at) VALUES ($1, $2, $3, $4, $5, $6)", values:[await hash(state), id, verifier, origin, returnPath, Date.now() + 600000]},
     ]);
     return json({ url: await authorizationUrl(origin, state, verifier) });
   } catch (error) { return apiError(error); }
