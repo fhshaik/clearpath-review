@@ -8,21 +8,27 @@ financial-marketing compliance or an accuracy claim on real campaigns.
 Public URL: https://clearpath-review.vercel.app  
 Source repository: https://github.com/fhshaik/clearpath-review
 
-Production deployment **dpl_EE4ok91qWo3cm33rcehHc154nsR8** is READY and
+Production deployment **dpl_U794jQia2hZAVKi8wwRCCn9aAbbx** is READY and
 serves the public alias. Application source commit:
-**716ed39390b9a56d1f26dba8961ba6e74cef2906**. The hosted suites below ran
+**f032f91375e01b7be02f589b8d0862ed6caaf044**. The hosted suites below ran
 anonymously against the public alias with no authentication bypass.
 
 | Hosted check | Observed result |
 | --- | --- |
 | Anonymous HTTP smoke | 14 passed |
-| Full HTTP workflow, including real Anthropic generation | 8 passed |
+| Full HTTP workflow, including real Anthropic generation | 8 passed on the initial sponsored release; provider/API unchanged in final focus fix |
+| Final release repeat | 14 smoke + 7 workflow checks passed with no additional inference |
+| Keyboard guide dismissal | Escape closes dialog and returns focus to Demo guide button |
 | Hosted provider receipt | 2375 input / 493 output tokens; estimated $0.000484 |
 | Public Chrome | Live review completed with four findings and AI draft; no console warnings/errors |
 | Downloaded queue CSV | Verified nine columns and eight campaign rows |
 | Empty queue search | Clear recovery action shown |
 
-Application CI passed: https://github.com/fhshaik/clearpath-review/actions/runs/40343772684
+Application CI passed: https://github.com/fhshaik/clearpath-review/actions/runs/40344602273
+
+At final verification, the persistent global budget was 5/20 used (15 attempts
+remaining). This count can change as visitors use the demo; it is not a billing
+balance. The final documentation commit does not change deployed application code.
 
 The production configuration has sensitive server-only ANTHROPIC_API_KEY,
 DATABASE_URL and AI_CONNECTION_SECRET variables. Sponsored mode is enabled only
